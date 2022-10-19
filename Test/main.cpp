@@ -55,7 +55,7 @@ int main(void) {
             gameSet.GetKeyboardInput(&blockX, &blockY, &blockKind, &blockStatus);
 
             string data = gameSet.toouchDownBlock(&blockX, &blockY);
-            cout << "data:  " << data << "\n";
+
             if (data.compare("crash") == 0) {
                 blockX = x / 2;
                 blockY = spacePlace;

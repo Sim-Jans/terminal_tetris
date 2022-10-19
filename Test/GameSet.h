@@ -65,7 +65,7 @@ class GameSet : public Block{
             }*/
             
             //출력 하면 안되는 죄표 시작점
-            int min = spacePlace - 1;
+            int min = spacePlace;
             int maxX = totalX - spacePlace - 1;
             int maxY = totalY - spacePlace - 1;
 
@@ -83,9 +83,9 @@ class GameSet : public Block{
                 //x 좌표
                 for (int j = 0; j < totalX; j++) {
                     //숨기는 좌표
-                    if (j < min || maxX < j) {
+                    /*if (j < min || maxX < j) {
                         continue;
-                    }
+                    }*/
 
                     //상위 라인
                     if (i == min) {

@@ -42,6 +42,11 @@ void GameSet::drawBackground() {
             else if (table[i][j] == 2) {
                 cout << "■";
             }
+            //
+            else if (table[i][j] == 3) {
+                cout << "**";
+            }
+            //
             else {
                 cout << "  ";
             }
@@ -276,29 +281,55 @@ void GameSet::createBlock(int x, int y, int blockKind) {
 }
 
 /*
-    블록이 충돌
+    블록 하단 충돌
 */
 string GameSet::toouchDownBlock(int* x, int* y) {
 
     string data = "safe ";
+    //마지막 블록 여부
+    boolean finalBlockToggle = false;
+
+    int cx = 0;
+    int cy = 0;
     //int cnt = 3;
     //y좌표
     for (int i = 3; i >= 0; i--) {
             //x좌표
-            for (int j = 4; j > 0; j--) {
+            for (int j = 0; j < 4; j++) {
+                //x좌표
+                int lineX = *x + j -1;
+                //y좌표
+                int lineY = *y + i -1;
                 //블록만
-                if (table[i + *y][*x + j] == 2) {
-                   
-                    if (table[i + 1 + *y][*x + j] == 1 ) {
+                if (table[lineY][lineX] == 2) {
+                    finalBlockToggle = true;
+                    //
+                    cx = lineX;
+                    cy = lineY;
+                    //
+                    table[lineY+1][lineX] = 3;
+                    //라인 충돌, 블록 충돌
+                    if (table[lineY + 1][lineX] == 1) {
                         
                         data = "crash";
-                        break;
+                        
                     }
+                    break;
+
                 }
 
             }
+            cout << "cx:" << cx << "\n";
+            cout << "cy:" << cy << "\n";
+            
             //cnt--;
             if (data.compare("crash") == 0) break;
+            //블록의 마지막 x라인이 끝남
+            if (finalBlockToggle) {
+                cout << "\n lineX : " << cx;
+                cout << "\n lineY : " << cy + 1;
+                break;
+            }
     }
     return data;
 }
