@@ -56,47 +56,54 @@ void GameSet::drawBackground() {
 /*
     키보드 클릭
 */
-void GameSet::GetKeyboardInput(int* x, int* y, int* blockKind)
+void GameSet::GetKeyboardInput(int* x, int* y, int* blockKind, int* blockStatus)
 {
     string status = "";
     char mInput = _getch();
     switch (mInput) {
     case 72:            // 위 방향키
         //cout << "위 \n";
-        moveBlock(x, y, "up", blockKind);
+        moveBlock(x, y, "up", blockKind, blockStatus);
         break;
     case 75:            // 왼쪽 방향키
         //cout << "왼쪽 \n";
       
-        moveBlock(x, y, "left", blockKind);
+        moveBlock(x, y, "left", blockKind, blockStatus);
         break;
     case 77:            // 오른쪽 방향키
         //cout << "오른쪽 \n";
    
-        moveBlock(x, y, "right", blockKind);
+        moveBlock(x, y, "right", blockKind, blockStatus);
         break;
     case 80:            // 아래쪽 방향키
         //cout << "아래쪽 \n";
     
-        moveBlock(x, y, "down", blockKind);
+        moveBlock(x, y, "down", blockKind, blockStatus);
         break;
     case 32:            // 스페이스 바
         //cout << "스페이스 \n";
+        moveBlock(x, y, "space", blockKind, blockStatus);
         break;
     default:
         break;
     }
     
 }
+/*
+    블록 모양 변경
+*/
+void GameSet::changeBlock(int* x, int* y, int* blockKind, int* blockStatus) {
+
+}
 
 /*
     블록 이동함
 */
-void GameSet::moveBlock(int* x, int* y, string status, int* blockKind) {
+void GameSet::moveBlock(int* x, int* y, string status, int* blockKind, int* blockStatus) {
     
     vector<int> oneVector(4, 0);
     //4 4 공간 좌표
-    vector<vector<int>> blockStatus(4, oneVector);
+    vector<vector<int>> blockCoordinate(4, oneVector);
     //블럭 이동 확인하기
     for (int i = 0; i < 4; i++) {
         //x좌표
@@ -104,7 +111,6 @@ void GameSet::moveBlock(int* x, int* y, string status, int* blockKind) {
             if (table[i + *y][j + *x] == 2) {
                 //x
                 if (status.compare("left") == 0 && table[i + *y][j + *x - 1] == 1) {
-                    cout << "멈춤\n";
                     return;
                 }
                 else if (status.compare("right") == 0 && table[i + *y][j + *x + 1] == 1) {
@@ -122,26 +128,17 @@ void GameSet::moveBlock(int* x, int* y, string status, int* blockKind) {
         }
     }
 
-    //table에서 블록 제거
-    //y 좌표
-    for (int i = 0; i < 4; i++) {
-        //x좌표
-        for (int j = 0; j < 4; j++) {
-            if (table[i+ *y][j+ *x] == 2) {
-                table[i + *y][j + *x] = 0;
-            }
-
-        }
-    }
     //블록정보
     vector<int*> blockVector = getBlockVector();
-
+    //블록 종류
     int* blockData = blockVector[*blockKind];
+
     //블럭 정보 저장
     //y
     for (int i = 0; i < 4; i++) {
+        int cnt = *blockStatus * 16;
         //블록좌표
-        int* blockX = (int*)(blockData + i * 4);
+        int* blockX = (int*)(blockData + i * 4 + cnt);
         //x
         for (int j = 0; j < 4; j++) {
             if (blockX[j] == 0) {
@@ -149,22 +146,34 @@ void GameSet::moveBlock(int* x, int* y, string status, int* blockKind) {
                 //블록출력 필요
             }
             else if (blockX[j] == 2) {
-                blockStatus[j][i] = blockX[j];
+                blockCoordinate[j][i] = blockX[j];
             }
 
         }
 
     }
-    
+ 
+    //블록 제거
+    for (int i = 0; i < 4; i++) {
+        //x좌표
+        for (int j = 0; j < 4; j++) {
+            
+            if ((blockCoordinate[i][j] == table[i + *y][j + *x]) && (table[i + *y][j + *x] == 2)) {
+                table[i + *y][j + *x] = 0;
+            }
+         
+        }
+       
+    }
     //왼쪽
-    if (status.compare("left") == 0){
-        *x - 1 > 0 ? *x -= 1: *x = 0;
-        
+    if (status.compare("left") == 0) {
+        *x - 1 > 0 ? *x -= 1 : *x = 0;
+
     }
     //오른쪽
     else if (status.compare("right") == 0) {
-        *x >= this->x  ? *x = this->x -1 : *x += 1;
-        
+        *x += 1;
+
     }
     //아래
     else if (status.compare("down") == 0) {
@@ -176,38 +185,58 @@ void GameSet::moveBlock(int* x, int* y, string status, int* blockKind) {
     }
     //방향전환
     else if (status.compare("space") == 0) {
+        int data = *blockStatus;
+
+        if (data == 3) {
+            *blockStatus = 0;
+        }
+        else {
+            data++;
+            *blockStatus +=1;
+        }
+        
+    }
+    
+
+    blockCoordinate.assign(4, oneVector);
+    //블럭 정보 저장
+    //y
+    for (int i = 0; i < 4; i++) {
+        int cnt = *blockStatus * 16;
+        //블록좌표
+        int* blockX = (int*)(blockData + i * 4 + cnt);
+        //x
+        for (int j = 0; j < 4; j++) {
+            if (blockX[j] == 0) {
+                continue;
+                //블록출력 필요
+            }
+            else if (blockX[j] == 2) {
+                blockCoordinate[j][i] = blockX[j];
+            }
+
+        }
 
     }
+    /*cout << "\n";
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            printf("%d ", blockCoordinate[i][j]);
+        }
+        cout << "\n";
+    }
+    cout << "\n";*/
 
-
-
+    //y 좌표    
     //블럭 출력
     for (int i = 0; i < 4; i++) {
         //x좌표
         for (int j = 0; j < 4; j++) {
-            if (blockStatus[i][j] == 2) {
-                table[i + *y][j + *x] = blockStatus[i][j];
+            if (blockCoordinate[i][j] == 2) {
+                table[i + *y][j + *x] = blockCoordinate[i][j];
             }
         }
     }
-    /*
-    //첫칸
-            if (j == 0 && table[i + *y][j + *x-1] == 1) {
-                return;
-            }
-            //마지막
-            else if (j == 3 && table[i + *y][j + *x + 1] == 1) {
-                return;
-            }
-            //y 첫칸
-            else if (i == 0 && table[i + *y-1][j + *x] == 1) {
-                return;
-            }
-            //마지막
-            else if (i == 3 && table[i + *y + 1][j + *x] == 1) {
-                return;
-            }
-    */
     
 }
 
@@ -240,10 +269,36 @@ void GameSet::createBlock(int x, int y, int blockKind) {
                 table[y + j][x + i] = blockX[j];
             }
             
-            
-            
         }
  
     }
     
+}
+
+/*
+    블록이 충돌
+*/
+string GameSet::toouchDownBlock(int* x, int* y) {
+
+    string data = "safe ";
+    //int cnt = 3;
+    //y좌표
+    for (int i = 3; i >= 0; i--) {
+            //x좌표
+            for (int j = 4; j > 0; j--) {
+                //블록만
+                if (table[i + *y][*x + j] == 2) {
+                   
+                    if (table[i + 1 + *y][*x + j] == 1 ) {
+                        
+                        data = "crash";
+                        break;
+                    }
+                }
+
+            }
+            //cnt--;
+            if (data.compare("crash") == 0) break;
+    }
+    return data;
 }

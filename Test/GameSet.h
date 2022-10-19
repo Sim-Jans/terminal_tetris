@@ -112,12 +112,16 @@ class GameSet : public Block{
 		//그리기
 		void drawBackground();
 		//키보드 이벤트
-		void GetKeyboardInput(int *x, int *y, int* blockKind);
+		void GetKeyboardInput(int *x, int *y, int* blockKind, int* blockStatus);
 		//콘솔 죄표 변경
 		void gotoxy(int x, int y);
 		//블록 생성
 		void createBlock(int x, int y, int blockKind);
         //블록이동
-        void moveBlock(int *x, int *y, string status, int* blockKind);
+        void moveBlock(int *x, int *y, string status, int* blockKind, int* blockStatus);
+        //블록 모양 변경
+        void changeBlock(int* x, int* y, int* blockKind, int* blockStatus);
+        //블록이 충돌
+        string toouchDownBlock(int* x, int* y);
 
 };

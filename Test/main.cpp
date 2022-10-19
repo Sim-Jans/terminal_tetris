@@ -34,16 +34,45 @@ int main(void) {
     int blockY = spacePlace;
     //블록 종류 5개
     int blockKind = 2;
-    gameSet.createBlock(blockX, blockY, blockKind);
-    //좌표 0, 0
-    gameSet.gotoxy(0,0);
-    //다시 그리기
-    gameSet.drawBackground();
+    //블럭 상태 4개
+    //0->1, 1->2,  3->0
+    int blockStatus = 0;
+    
+    //충돌여부 토글
+    boolean blockCrash = true;
 
     //int a = 0;
     while (true) {
+        //충돌여부
+        if (blockCrash) {
+            //블럭 생성
+            gameSet.createBlock(blockX, blockY, blockKind);
+            
+            //블럭 생성
+            blockCrash = false;
+        }
+        else {
+            gameSet.GetKeyboardInput(&blockX, &blockY, &blockKind, &blockStatus);
+
+            string data = gameSet.toouchDownBlock(&blockX, &blockY);
+            cout << "data:  " << data << "\n";
+            if (data.compare("crash") == 0) {
+                blockX = x / 2;
+                blockY = spacePlace;
+
+                blockStatus = 0;
+                if (blockKind == 4) {
+                    blockKind = 0;
+                }
+                else {
+                    blockKind++;
+                }
+                //충돌 성공
+                blockCrash = true;
+
+            }
+        }
         
-        gameSet.GetKeyboardInput(&blockX, &blockY, &blockKind);
         //좌표 0, 0
         gameSet.gotoxy(0, 0);
         //다시 그리기
