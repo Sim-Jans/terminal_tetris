@@ -54,7 +54,7 @@ int main(void) {
         else {
             gameSet.GetKeyboardInput(&blockX, &blockY, &blockKind, &blockStatus);
 
-            string data = gameSet.toouchDownBlock(&blockX, &blockY);
+            string data = gameSet.toouchDownBlock(&blockX, &blockY, &blockKind, &blockStatus);
 
             if (data.compare("crash") == 0) {
                 blockX = x / 2;

@@ -119,9 +119,7 @@ class GameSet : public Block{
 		void createBlock(int x, int y, int blockKind);
         //블록이동
         void moveBlock(int *x, int *y, string status, int* blockKind, int* blockStatus);
-        //블록 모양 변경
-        void changeBlock(int* x, int* y, int* blockKind, int* blockStatus);
+       
         //블록이 충돌
-        string toouchDownBlock(int* x, int* y);
-
+        string toouchDownBlock(int* x, int* y, int* blockKind, int* blockStatus);
 };

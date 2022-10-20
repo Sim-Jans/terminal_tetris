@@ -94,12 +94,6 @@ void GameSet::GetKeyboardInput(int* x, int* y, int* blockKind, int* blockStatus)
     }
     
 }
-/*
-    블록 모양 변경
-*/
-void GameSet::changeBlock(int* x, int* y, int* blockKind, int* blockStatus) {
-
-}
 
 /*
     블록 이동함
@@ -283,53 +277,78 @@ void GameSet::createBlock(int x, int y, int blockKind) {
 /*
     블록 하단 충돌
 */
-string GameSet::toouchDownBlock(int* x, int* y) {
-
-    string data = "safe ";
+string GameSet::toouchDownBlock(int* x, int* y, int* blockKind, int* blockStatus) {
+    
+    string data = "safe";
     //마지막 블록 여부
     boolean finalBlockToggle = false;
-
-    int cx = 0;
-    int cy = 0;
+    //블록정보
+    vector<int*> blockVector = getBlockVector();
+    //블록 종류
+    int* blockData = blockVector[*blockKind];
+    
+    cout << "x:" << *x << "\n";
+    cout << "y:" << *y << "\n";
+    
     //int cnt = 3;
     //y좌표
-    for (int i = 3; i >= 0; i--) {
+    for (int i = 0; i < 4; i++) {
             //x좌표
             for (int j = 0; j < 4; j++) {
                 //x좌표
-                int lineX = *x + j -1;
+                int lineX = (int) * x + j;
                 //y좌표
-                int lineY = *y + i -1;
-                //블록만
-                if (table[lineY][lineX] == 2) {
-                    finalBlockToggle = true;
-                    //
-                    cx = lineX;
-                    cy = lineY;
-                    //
-                    table[lineY+1][lineX] = 3;
-                    //라인 충돌, 블록 충돌
-                    if (table[lineY + 1][lineX] == 1) {
-                        
-                        data = "crash";
-                        
-                    }
-                    break;
+                int lineY = (int) * y + i ;
 
+                //블록좌표
+                if (table[lineY][lineX] == 2) {
+                    //현재 블록 모양과 출력 모양 비교
+                    if (i < 3) {
+                        //현재 블록 모양 좌표
+                        int* blockX = (int*)(blockData + (i + 1) * 4);
+                        //같은 모양에서 블록이 나온 경우
+                        if (blockX[lineX] == 2) {
+                            cout << "넘김";
+                            continue;
+                        }
+                    }
+                    //벽만남
+                    if (table[lineY+1][lineX] == 1) {
+                        data = "crash";
+                        finalBlockToggle = true;
+                        break;
+                    }
                 }
 
             }
-            cout << "cx:" << cx << "\n";
-            cout << "cy:" << cy << "\n";
-            
             //cnt--;
             if (data.compare("crash") == 0) break;
             //블록의 마지막 x라인이 끝남
             if (finalBlockToggle) {
-                cout << "\n lineX : " << cx;
-                cout << "\n lineY : " << cy + 1;
+                
                 break;
             }
     }
+
+    /*
+    for (int i = 0; i < 4; i++) {
+        int cnt = *blockStatus * 16;
+        //블록좌표
+        int* blockX = (int*)(blockData + i * 4);
+        //x
+        for (int j = 0; j < 4; j++) {
+            if (blockX[j] == 0) {
+                continue;
+                //블록출력 필요
+            }
+            else if (blockX[j] == 2) {
+                blockCoordinate[j][i] = blockX[j];
+            }
+
+        }
+
+    }
+    
+    */
     return data;
 }
